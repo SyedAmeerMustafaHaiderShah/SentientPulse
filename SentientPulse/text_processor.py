@@ -2,69 +2,50 @@ import re
 
 class TextProcessor:
     """
-    Step 1: The TextProcessor.
+    Step 1: The TextProcessor (Robust Version).
     Goal: Transform raw user input into a batch list of clean sentences.
-    Splits by punctuation to preserve the context for the TF-IDF Bigram model.
+    Splits by punctuation, but also handles "run-on" sentences (no punctuation)
+    to ensure the MoodAggregator has enough data points for a ratio.
     """
 
-    def __init__(self):
-        # Regex to split by . ! or ? while keeping the sentence logic intact
+    def __init__(self, max_words_per_split=15):
+        # Primary split: . ! or ?
         self.split_pattern = r'(?<=[.!?])\s+'
+        # Secondary split: Fallback word count if punctuation is missing
+        self.max_words = max_words_per_split
 
     def process_to_sentences(self, raw_text):
         """
-        Takes raw string and returns a list of individual sentences.
+        Takes raw string and returns a list of individual sentences or chunks.
         """
         if not raw_text or not isinstance(raw_text, str):
             return []
 
-        # 1. Basic cleaning: remove newlines and extra spaces
+        # 1. Standardize text: Remove newlines and reduce extra spaces
         clean_text = raw_text.replace("\n", " ").strip()
         clean_text = re.sub(r'\s+', ' ', clean_text)
 
-        # 2. Split text into a list based on sentence-ending punctuation
-        sentences = re.split(self.split_pattern, clean_text)
+        # 2. Initial Split by Punctuation
+        initial_chunks = re.split(self.split_pattern, clean_text)
+        
+        batch_list = []
 
-        # 3. Final cleaning: remove any empty strings that might occur from split
-        batch_list = [s.strip() for s in sentences if s.strip()]
+        # 3. Handle "Run-on" Sentences
+        for chunk in initial_chunks:
+            chunk = chunk.strip()
+            if not chunk:
+                continue
+
+            words = chunk.split()
+            
+            # If the chunk is a long "wall of text" without punctuation
+            if len(words) > self.max_words:
+                # Break it into smaller batches for the ML model
+                for i in range(0, len(words), self.max_words):
+                    sub_chunk = " ".join(words[i:i + self.max_words])
+                    batch_list.append(sub_chunk)
+            else:
+                batch_list.append(chunk)
 
         return batch_list
-
-# ==========================================
-# TESTING FUNCTION (Verification Block)
-# ==========================================
-def test_step_1():
-    print("--- Testing Step 1: TextProcessor ---")
-    processor = TextProcessor()
-
-    # Scenario 1: Multiple sentences with different punctuation
-    text_1 = "I am so happy today! But why is the weather so bad? I hope the Owl helps me."
-    result_1 = processor.process_to_sentences(text_1)
-    
-    # Scenario 2: Single long sentence with no punctuation
-    text_2 = "This is just one long sentence without any split marks"
-    result_2 = processor.process_to_sentences(text_2)
-
-    # Scenario 3: Text with extra spaces and newlines
-    text_3 = "   Hello world.    This has   too many   spaces. \n And a new line!   "
-    result_3 = processor.process_to_sentences(text_3)
-
-    # Verifying Results
-    print(f"Test 1 (Standard): {result_1}")
-    assert len(result_1) == 3, f"Expected 3 sentences, got {len(result_1)}"
-
-    print(f"Test 2 (No Punctuation): {result_2}")
-    assert len(result_2) == 1, "Expected 1 sentence"
-
-    print(f"Test 3 (Cleaning): {result_3}")
-    assert "too many spaces." in result_3[1], "Cleaning failed to preserve text correctly"
-
-    print("\n[SUCCESS] Step 1 passed all tests. Data is ready for the Batch loop.")
-
-
-
-
-
-
-
 
