@@ -3,7 +3,7 @@
 
 ![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![ML](https://img.shields.io/badge of a conversation using a custom-trained **Naive Bayes Bigram model**, the engine intelligently selects one of **120 unique personas** to guide the AI's response. 
+ of a conversation using a custom-trained **Naive Bayes Bigram model**, the engine intelligently selects one of **120 unique personas** to guide the AI's response. 
 
 Whether the user is in a state of **Crisis, Struggle, Balanced, or Positive**, SentientPulse injects hidden system directives that modify the AI's behavior, setting, and tone—keeping all the complex logic hidden from the user while delivering a deeply personalized experience.
 
