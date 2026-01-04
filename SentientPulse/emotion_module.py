@@ -1,8 +1,26 @@
-from text_processor import TextProcessor
-from sentiment_adapter import SentimentAdapter
-from mood_aggregator import MoodAggregator
-from persona_registory import PersonaRegistry
-from prompt_constructor import PromptConstructor
+import sys
+import os
+
+# --- PROFESSIONAL INTEGRATION LOGIC ---
+# This ensures internal imports work regardless of where the script is run from
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+if CURRENT_DIR not in sys.path:
+    sys.path.append(CURRENT_DIR)
+
+# Internal Imports
+try:
+    from text_processor import TextProcessor
+    from sentiment_adapter import SentimentAdapter
+    from mood_aggregator import MoodAggregator
+    from persona_registory import PersonaRegistry # Using your spelling
+    from prompt_constructor import PromptConstructor
+except ImportError as e:
+    print(f"⚠️ Internal Import Warning: {e}. Attempting relative import...")
+    from .text_processor import TextProcessor
+    from .sentiment_adapter import SentimentAdapter
+    from .mood_aggregator import MoodAggregator
+    from .persona_registory import PersonaRegistry
+    from .prompt_constructor import PromptConstructor
 
 class EmotionModule:
     """
@@ -19,7 +37,7 @@ class EmotionModule:
     def get_ai_instruction(self, user_text):
         """
         Input: Raw User Text
-        Output: { 'prompt': str, 'metadata': dict }
+        Output: { 'secret_prompt': str, 'metadata': dict }
         """
         # Step 1: Split into sentences
         sentences = self.processor.process_to_sentences(user_text)
@@ -46,6 +64,7 @@ class EmotionModule:
                 "positivity_ratio": mood_profile['pos_ratio']
             }
         }
+
     def display_summary(self, engine_output):
         """
         A helper method for developers to quickly see the results 
@@ -59,10 +78,7 @@ class EmotionModule:
         print(f"  - Mood:     {engine_output['metadata']['mood_label']}")
         print(f"  - Neg/Pos:  {engine_output['metadata']['negativity_ratio']}% / {engine_output['metadata']['positivity_ratio']}%")
         print("\nINSTRUCTION (Send this to your AI):")
-        print(f"  {engine_output['secret_prompt'][:150]}...") # Shows just the start
+        # Added a safety check for the string slicing
+        prompt_preview = engine_output['secret_prompt'][:150] if engine_output['secret_prompt'] else "N/A"
+        print(f"  {prompt_preview}...") 
         print("="*40 + "\n")
-
-    
-# below is the helper method  create the boject
-
-

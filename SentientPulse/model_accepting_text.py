@@ -1,13 +1,21 @@
 import re
+import os
 import string
 import joblib
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
-# Load saved artifacts
-tfidf_bigram = joblib.load('models/tfidf_vectorizer.pkl')
-nb_bigram = joblib.load('linear_svm_model.pkl')
+# --- NEW PATH LOGIC START ---
+# This finds the folder where THIS file (the one you shared) is located
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# This creates the full path to your models folder
+tfidf_path = os.path.join(CURRENT_DIR, 'models', 'tfidf_vectorizer.pkl')
+nb_path = os.path.join(CURRENT_DIR, 'models','linear_svm_model.pkl')
+
+# Load saved artifacts using the full paths
+tfidf_bigram = joblib.load(tfidf_path)
+nb_bigram = joblib.load(nb_path)
 # Preprocessing tools
 stop_words = set(stopwords.words('english'))
 lemmatizer = WordNetLemmatizer()
