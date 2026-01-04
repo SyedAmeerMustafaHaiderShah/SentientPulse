@@ -5,8 +5,8 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
 # Load saved artifacts
-tfidf_bigram = joblib.load('models/tfidf_bigram_vectorizer.pkl')
-nb_bigram = joblib.load('models/naive_bayes_bigram_model.pkl')
+tfidf_bigram = joblib.load('models/tfidf_vectorizer.pkl')
+nb_bigram = joblib.load('linear_svm_model.pkl')
 
 # Preprocessing tools
 stop_words = set(stopwords.words('english'))
